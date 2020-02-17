@@ -68,8 +68,8 @@ def create_app(config_name):
                 results.append(obj)
             response = jsonify(results)
             if results == []:
-                response.status_code = 404
                 response = jsonify({"error": "User not found."})
+                response.status_code = 404
                 return response
             else:
                 response.status_code = 200

@@ -8,7 +8,7 @@ class UserTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.user = {'name': 'Ryan Hantak', 'email': 'rhantak@example.com'}
+        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com'}
 
         with self.app.app_context():
             db.create_all()
@@ -16,7 +16,8 @@ class UserTestCase(unittest.TestCase):
     def test_user_creation(self):
         res = self.client().post('/users', json=self.user)
         self.assertEqual(res.status_code, 201)
-        self.assertIn('Ryan Hantak', str(res.data))
+        self.assertIn('Ryan', str(res.data))
+        self.assertIn('Hantak', str(res.data))
         self.assertIn('rhantak@example.com', str(res.data))
 
     def test_api_can_get_all_users(self):
@@ -24,7 +25,8 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         res = self.client().get('/users')
         self.assertEqual(res.status_code, 200)
-        self.assertIn('Ryan Hantak', str(res.data))
+        self.assertIn('Ryan', str(res.data))
+        self.assertIn('Hantak', str(res.data))
         self.assertIn('rhantak@example.com', str(res.data))
 
 
@@ -35,7 +37,8 @@ class UserTestCase(unittest.TestCase):
         result = self.client().get(
             '/users/{}'.format(result_in_json['id']))
         self.assertEqual(result.status_code, 200)
-        self.assertIn('Ryan Hantak', str(result.data))
+        self.assertIn('Ryan', str(result.data))
+        self.assertIn('Hantak', str(result.data))
         self.assertIn('rhantak@example.com', str(result.data))
 
     def test_api_sends_error_for_missing_user(self):

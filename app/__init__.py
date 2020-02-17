@@ -19,14 +19,16 @@ def create_app(config_name):
     @app.route('/users', methods=['POST', 'GET'])
     def users():
         if request.method == "POST":
-            name = str(request.json.get('name', ''))
+            first_name = str(request.json.get('first_name', ''))
+            last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
-            if name:
-                user = User(name=name, email=email)
+            if first_name and last_name and email:
+                user = User(first_name=first_name, last_name=last_name, email=email)
                 user.save()
                 response = jsonify({
                     'id': user.id,
-                    'name': user.name,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
                     'email': user.email,
                     'date_created': user.date_created,
                     'date_modified': user.date_modified
@@ -41,7 +43,8 @@ def create_app(config_name):
             for user in users:
                 obj = {
                     'id': user.id,
-                    'name': user.name,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
                     'email': user.email,
                     'date_created': user.date_created,
                     'date_modified': user.date_modified
@@ -60,7 +63,8 @@ def create_app(config_name):
             for user in users:
                 obj = {
                     'id': user.id,
-                    'name': user.name,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
                     'email': user.email,
                     'date_created': user.date_created,
                     'date_modified': user.date_modified

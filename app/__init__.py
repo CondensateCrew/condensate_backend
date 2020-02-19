@@ -1,7 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
 from instance.config import app_config
+
+from database import db_session
+from flask_graphql import GraphQLView
+from schema import schema
 
 db = SQLAlchemy()
 
@@ -78,5 +81,11 @@ def create_app(config_name):
             else:
                 response.status_code = 200
                 return response
+
+    app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True, context={'session': db_session}))
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
     return app

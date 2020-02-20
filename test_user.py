@@ -8,13 +8,16 @@ class UserTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com'}
+        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com', 'password_digest': 'password'}
 
         with self.app.app_context():
             db.create_all()
 
     def test_user_creation(self):
         res = self.client().post('/users', json=self.user)
+        data = json.loads(res.get_data(as_text=True))
+
+        self.assertEqual(len(data['token']), 32)
         self.assertEqual(res.status_code, 201)
         self.assertIn('Ryan', str(res.data))
         self.assertIn('Hantak', str(res.data))
@@ -24,6 +27,7 @@ class UserTestCase(unittest.TestCase):
         res = self.client().post('/users', json=self.user)
         self.assertEqual(res.status_code, 201)
         res = self.client().get('/users')
+
         self.assertEqual(res.status_code, 200)
         self.assertIn('Ryan', str(res.data))
         self.assertIn('Hantak', str(res.data))

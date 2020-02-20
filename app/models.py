@@ -1,4 +1,5 @@
 from app import db
+import secrets
 
 
 class User(db.Model):
@@ -8,6 +9,8 @@ class User(db.Model):
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     email = db.Column(db.String(255))
+    password_digest = db.Column(db.String(255))
+    token = db.Column(db.String(255))
     categories = db.relationship('Category', backref='user', lazy=True)
     actions = db.relationship('Action', backref='user', lazy=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
@@ -15,10 +18,12 @@ class User(db.Model):
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
 
-    def __init__(self, first_name, last_name, email):
+    def __init__(self, first_name, last_name, email, password_digest):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.password_digest = password_digest
+        self.token = secrets.token_hex(16)
 
     def save(self):
         db.session.add(self)

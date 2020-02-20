@@ -22,14 +22,16 @@ def create_app(config_name):
             first_name = str(request.json.get('first_name', ''))
             last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
-            if first_name and last_name and email:
-                user = User(first_name=first_name, last_name=last_name, email=email)
+            password_digest = str(request.json.get('password_digest', ''))
+            if first_name and last_name and email and password_digest:
+                user = User(first_name=first_name, last_name=last_name, email=email, password_digest=password_digest)
                 user.save()
                 response = jsonify({
                     'id': user.id,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'email': user.email,
+                    'token': user.token,
                     'date_created': user.date_created,
                     'date_modified': user.date_modified
                 })

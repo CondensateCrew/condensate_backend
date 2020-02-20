@@ -5,7 +5,7 @@ from instance.config import app_config
 
 db = SQLAlchemy()
 
-from flask import request, jsonify, abort
+from flask import request, jsonify, abort, make_response
 
 def create_app(config_name):
     from app.models import User
@@ -23,7 +23,9 @@ def create_app(config_name):
             last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
             password_digest = str(request.json.get('password_digest', ''))
-            if first_name and last_name and email and password_digest:
+            if User.query.filter_by(email=email).count() > 0:
+                abort(make_response(jsonify(message="A user with this email already exists."), 400))
+            elif first_name and last_name and email and password_digest:
                 user = User(first_name=first_name, last_name=last_name, email=email, password_digest=password_digest)
                 user.save()
                 response = jsonify({
@@ -37,6 +39,9 @@ def create_app(config_name):
                 })
                 response.status_code = 201
                 return response
+            else:
+                abort(make_response(jsonify(message="Missing parameter."), 400))
+
         else:
             # GET
             users = User.get_all()

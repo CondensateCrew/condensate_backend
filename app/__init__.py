@@ -11,6 +11,7 @@ def create_app(config_name):
     from app.models import User
 
     app = Flask(__name__, instance_relative_config=True)
+    app.config['JSON_SORT_KEYS'] = False
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -61,29 +62,70 @@ def create_app(config_name):
             response.status_code = 200
             return response
 
-    @app.route('/users/<int:user_id>', methods=['GET'])
+    @app.route('/users/<int:user_id>')
     def user(user_id):
-        if request.method == "GET":
-            users = User.query.filter_by(id=user_id)
-            results = []
+        users = User.query.filter_by(id=user_id)
+        results = []
 
-            for user in users:
-                obj = {
-                    'id': user.id,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'email': user.email,
-                    'date_created': user.date_created,
-                    'date_modified': user.date_modified
+        for user in users:
+            obj = {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'date_created': user.date_created,
+                'date_modified': user.date_modified
+            }
+            results.append(obj)
+        response = jsonify(results)
+        if results == []:
+            response = jsonify({"error": "User not found."})
+            response.status_code = 404
+            return response
+        else:
+            response.status_code = 200
+            return response
+
+    @app.route('/game_setup')
+    def setup():
+        token = str(request.json.get('token', ''))
+        if User.query.filter_by(token=token).count() > 0:
+            user = User.query.filter_by(token=token).one()
+            actions = []
+            for action in user.actions:
+                actions.append({"id": action.id, "action": action.action})
+            categories = []
+            for category in user.categories:
+                categories.append({"id": category.id, "name": category.name})
+            brainstorms = []
+            for idea in user.ideas:
+                bsCategories = []
+                for category in idea.categories:
+                    bsCategories.append({"id": category.id, "name": category.name})
+                bsObj = {
+                    "id": idea.id,
+                    "response": idea.response,
+                    "categories": bsCategories,
+                    "action": {"id": idea.action.id, "action": idea.action.action},
+                    "isGenius": idea.is_genius,
+                    "question": idea.question
                 }
-                results.append(obj)
-            response = jsonify(results)
-            if results == []:
-                response = jsonify({"error": "User not found."})
-                response.status_code = 404
-                return response
-            else:
-                response.status_code = 200
-                return response
+                brainstorms.append(bsObj)
+            # import code; code.interact(local=dict(globals(), **locals()))
+            obj = {
+                "user": {
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email
+                },
+                "brainstorms": brainstorms,
+                "actions": actions,
+                "categories": categories
+            }
+            response = jsonify(obj)
+            return response
+        else:
+            abort(make_response(jsonify(message="Could not find a user with that token."), 404))
 
     return app

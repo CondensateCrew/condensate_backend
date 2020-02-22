@@ -156,3 +156,32 @@ class Word(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+class Sentence(db.Model):
+    __tablename__ = 'sentences'
+
+    id = db.Column(db.Integer, primary_key=True)
+    example = db.Column(db.Text)
+    from_api = db.Column(db.Boolean)
+    word_id = db.Column(db.Integer, db.ForeignKey('words.id'), nullable=False)
+    word = db.relationship('Word', backref='example', lazy=True)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
+
+    def __init__(self, example, from_api, word_id):
+        self.example = example
+        self.from_api = from_api
+        self.word_id = word_id
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return self.example

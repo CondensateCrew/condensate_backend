@@ -143,3 +143,16 @@ class Idea(db.Model):
 
     def __repr__(self):
         return "<Idea: {}>".format(self.response)
+
+class Word(db.Model):
+    __tablename__ = "words"
+
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.String(255))
+
+    def __init__(self, word):
+        self.word = word
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

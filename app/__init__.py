@@ -9,6 +9,7 @@ from flask import request, jsonify, abort, make_response
 
 def create_app(config_name):
     from app.models import User
+    from app.models import Word
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['JSON_SORT_KEYS'] = False
@@ -127,5 +128,17 @@ def create_app(config_name):
             return response
         else:
             abort(make_response(jsonify(message="Could not find a user with that token."), 404))
+
+    @app.route('/import_nouns')
+    def nouns():
+        file = open("nouns.txt", "r")
+        counter = 0
+        for line in file:
+            if Word.query.filter_by(word=line).count() == 0:
+                dbWord = Word(word=line)
+                dbWord.save()
+                counter += 1
+
+        return jsonify({"Words Added":counter})
 
     return app

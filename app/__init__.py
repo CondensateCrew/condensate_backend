@@ -87,7 +87,7 @@ def create_app(config_name):
             response.status_code = 200
             return response
 
-    @app.route('/game_setup')
+    @app.route('/dashboard')
     def setup():
         token = str(request.json.get('token', ''))
         if User.query.filter_by(token=token).count() > 0:

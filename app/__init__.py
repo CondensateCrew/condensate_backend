@@ -6,10 +6,15 @@ from instance.config import app_config
 db = SQLAlchemy()
 
 from flask import request, jsonify, abort, make_response
+from sqlalchemy.sql.expression import func, select
+import requests
+import random
+import os
 
 def create_app(config_name):
     from app.models import User
     from app.models import Word
+    from app.models import Sentence
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['JSON_SORT_KEYS'] = False
@@ -87,8 +92,8 @@ def create_app(config_name):
             response.status_code = 200
             return response
 
-    @app.route('/game_setup')
-    def setup():
+    @app.route('/dashboard')
+    def dashboard():
         token = str(request.json.get('token', ''))
         if User.query.filter_by(token=token).count() > 0:
             user = User.query.filter_by(token=token).one()
@@ -140,5 +145,16 @@ def create_app(config_name):
                 counter += 1
 
         return jsonify({"Words Added":counter})
+
+    @app.route('/game_setup')
+    def setup():
+        words = Word.query.order_by(func.random()).limit(64)
+        random_words = []
+
+        for word in words:
+            sentence = find_sentence(word)
+            random_words.append({ "word": word.word[:-1], "sentence": sentence })
+
+        return jsonify(random_words)
 
     return app

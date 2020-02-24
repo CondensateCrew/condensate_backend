@@ -164,7 +164,7 @@ class Sentence(db.Model):
     example = db.Column(db.Text)
     from_api = db.Column(db.Boolean)
     word_id = db.Column(db.Integer, db.ForeignKey('words.id'), nullable=False)
-    word = db.relationship('Word', backref='example', lazy=True)
+    word = db.relationship('Word', backref='sentence', lazy=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),

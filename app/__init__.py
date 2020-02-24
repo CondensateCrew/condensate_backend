@@ -158,7 +158,6 @@ def create_app(config_name):
                     }
                 response = requests.request("GET", url, headers=headers, params=querystring)
                 raw_sentence_response = response.json()
-                import code; code.interact(local=dict(globals(), **locals()))
                 while True:
                     index_choice = random.choice(range(len(raw_sentence_response["example"])))
                     sentence_response = raw_sentence_response["example"][index_choice]

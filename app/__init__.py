@@ -6,10 +6,15 @@ from instance.config import app_config
 db = SQLAlchemy()
 
 from flask import request, jsonify, abort, make_response
+from sqlalchemy.sql.expression import func, select
+import requests
+import random
+import os
 
 def create_app(config_name):
     from app.models import User
     from app.models import Word
+    from app.models import Sentence
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['JSON_SORT_KEYS'] = False
@@ -88,7 +93,7 @@ def create_app(config_name):
             return response
 
     @app.route('/dashboard')
-    def setup():
+    def dashboard():
         token = str(request.json.get('token', ''))
         if User.query.filter_by(token=token).count() > 0:
             user = User.query.filter_by(token=token).one()
@@ -140,5 +145,45 @@ def create_app(config_name):
                 counter += 1
 
         return jsonify({"Words Added":counter})
+
+    @app.route('/game_setup')
+    def setup():
+        def find_sentence(word):
+            if len(word.sentence) < 3:
+                url = "https://twinword-word-graph-dictionary.p.rapidapi.com/example/"
+                querystring = {"entry":word.word[:-1]}
+                headers = {
+                    'x-rapidapi-host': "twinword-word-graph-dictionary.p.rapidapi.com",
+                    'x-rapidapi-key': os.getenv('RAPID_API_KEY')
+                    }
+                response = requests.request("GET", url, headers=headers, params=querystring)
+                raw_sentence_response = response.json()
+                import code; code.interact(local=dict(globals(), **locals()))
+                while True:
+                    index_choice = random.choice(range(len(raw_dictionary_response["example"])))
+                    sentence_response = raw_dictionary_response["example"][index_choice]
+                    if Sentence.query.filter_by(example=sentence_response).count() == 0:
+                        break
+
+                sentence = Sentence(
+                    example=sentence_response,
+                    from_api=True,
+                    word_id=word.id
+                )
+                sentence.save()
+
+                return raw_dictionary_response["example"][0]
+
+            else:
+                return random.choice(word.sentence)
+
+        words = Word.query.order_by(func.random()).limit(64)
+        random_words = []
+
+        for word in words:
+            sentence = find_sentence(word)
+            random_words.append({ "word": word.word[:-1], "sentence": sentence })
+
+        return jsonify(random_words)
 
     return app

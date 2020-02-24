@@ -148,6 +148,35 @@ def create_app(config_name):
 
     @app.route('/game_setup')
     def setup():
+        def find_sentence(word):
+            if len(word.sentence) < 3:
+                url = "https://twinword-word-graph-dictionary.p.rapidapi.com/example/"
+                querystring = {"entry":word.word[:-1]}
+                headers = {
+                    'x-rapidapi-host': "twinword-word-graph-dictionary.p.rapidapi.com",
+                    'x-rapidapi-key': os.getenv('RAPID_API_KEY')
+                    }
+                response = requests.request("GET", url, headers=headers, params=querystring)
+                raw_sentence_response = response.json()
+                import code; code.interact(local=dict(globals(), **locals()))
+                while True:
+                    index_choice = random.choice(range(len(raw_dictionary_response["example"])))
+                    sentence_response = raw_dictionary_response["example"][index_choice]
+                    if Sentence.query.filter_by(example=sentence_response).count() == 0:
+                        break
+
+                sentence = Sentence(
+                    example=sentence_response,
+                    from_api=True,
+                    word_id=word.id
+                )
+                sentence.save()
+
+                return raw_dictionary_response["example"][0]
+
+            else:
+                return random.choice(word.sentence)
+
         words = Word.query.order_by(func.random()).limit(64)
         random_words = []
 

@@ -163,6 +163,7 @@ def create_app(config_name):
                     }
                 response = requests.request("GET", url, headers=headers, params=querystring)
                 raw_sentence_response = response.json()
+
                 while True:
                     index_choice = random.choice(range(len(raw_sentence_response["example"])))
                     sentence_response = raw_sentence_response["example"][index_choice]
@@ -181,14 +182,23 @@ def create_app(config_name):
             else:
                 return random.choice(word.sentence)
 
-        words = Word.query.order_by(func.random()).limit(64)
-        random_words = []
+        if not request.data:
+            return make_response(jsonify(error="Missing token."), 400)
 
-        for word in words:
-            sentence = find_sentence(word)
-            random_words.append({ "word": word.word[:-1], "sentence": sentence })
+        token = str(request.json.get('token', ''))
+        user = User.query.filter_by(token=token)
 
-        return jsonify(random_words)
+        if user.count() > 0:
+            words = Word.query.order_by(func.random()).limit(64)
+            random_words = []
+
+            for word in words:
+                sentence = find_sentence(word)
+                random_words.append({ "word": word.word[:-1], "sentence": sentence })
+
+            return jsonify(random_words)
+        else:
+            return make_response(jsonify(error="User not found."), 404)
 
     @app.route('/login')
     def login():

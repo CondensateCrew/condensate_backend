@@ -160,8 +160,8 @@ def create_app(config_name):
                 raw_sentence_response = response.json()
                 import code; code.interact(local=dict(globals(), **locals()))
                 while True:
-                    index_choice = random.choice(range(len(raw_dictionary_response["example"])))
-                    sentence_response = raw_dictionary_response["example"][index_choice]
+                    index_choice = random.choice(range(len(raw_sentence_response["example"])))
+                    sentence_response = raw_sentence_response["example"][index_choice]
                     if Sentence.query.filter_by(example=sentence_response).count() == 0:
                         break
 
@@ -172,7 +172,7 @@ def create_app(config_name):
                 )
                 sentence.save()
 
-                return raw_dictionary_response["example"][0]
+                return raw_sentence_response["example"][0]
 
             else:
                 return random.choice(word.sentence)

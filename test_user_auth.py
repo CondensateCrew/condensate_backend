@@ -7,17 +7,17 @@ class UserTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com', 'password_digest': 'password'}
+        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com', 'password': 'password'}
         from app.models import User
-        
+
         with self.app.app_context():
             db.create_all()
 
-            user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password_digest="password")
+            user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password="password")
             user.save()
 
     def test_user_authentication(self):
-        body = {"email": "rhantak@example.com","password_digest": "password"}
+        body = {"email": "rhantak@example.com","password": "password"}
         res = self.client().get('/login', json=self.user)
         data = json.loads(res.get_data(as_text=True))
 

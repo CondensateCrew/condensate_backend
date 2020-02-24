@@ -2,7 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from instance.config import app_config
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 from flask import request, jsonify, abort, make_response
@@ -187,11 +189,11 @@ def create_app(config_name):
     @app.route('/login')
     def login():
         email = str(request.json.get('email', ''))
-        password_digest = str(request.json.get('password_digest', ''))
+        password = str(request.json.get('password', ''))
 
-        user = User.query.filter_by(email=email, password_digest=password_digest)
-        if user.count() > 0:
-            response = jsonify({ "token": user[0].token })
+        user = User.query.filter_by(email=email)[0]
+        if user and bcrypt.check_password_hash(user.password_digest, password):
+            response = jsonify({ "token": user.token })
             response.status_code = 303
             return response
 

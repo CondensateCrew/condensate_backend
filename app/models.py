@@ -1,4 +1,4 @@
-from app import db
+from app import db, bcrypt
 import secrets
 
 
@@ -19,11 +19,11 @@ class User(db.Model):
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
 
-    def __init__(self, first_name, last_name, email, password_digest):
+    def __init__(self, first_name, last_name, email, password):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password_digest = password_digest
+        self.password_digest = bcrypt.generate_password_hash(password).decode('UTF-8')
         self.token = secrets.token_hex(16)
 
     def save(self):

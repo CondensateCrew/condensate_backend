@@ -125,9 +125,13 @@ class Idea(db.Model):
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
 
-    def __init__(self,response, random_word, action_id, user_id):
+    def __init__(self,response, random_word, action_id, user_id, is_genius, question):
+        self.response = response
+        self.random_word = random_word
+        self.is_genius = is_genius
         self.action_id = action_id
         self.user_id = user_id
+        self.question = question
 
     def save(self):
         db.session.add(self)

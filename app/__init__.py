@@ -17,6 +17,10 @@ def create_app(config_name):
     from app.models import User
     from app.models import Word
     from app.models import Sentence
+    from app.models import Action
+    from app.models import Idea
+    from app.models import Category
+    from app.models import idea_categories
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['JSON_SORT_KEYS'] = False
@@ -196,5 +200,54 @@ def create_app(config_name):
             response = jsonify({ "token": user.token })
             response.status_code = 303
             return response
+
+    @app.route('/ideas', methods=['POST', 'DELETE'])
+    def ideas():
+        if request.method == "POST":
+            token = str(request.json.get('id', ''))
+            user = User.query.filter_by(token=token)
+            action = Action.query.filter_by(action=str(request.json.get('action', '')))
+            idea = Idea.query.filter_by(response=str(request.json.get('idea', '')))
+            categories = request.json.get('categories', '')
+
+            if str(request.json.get('isGenuis', '')) == 'True':
+                is_genius = True
+            if str(request.json.get('isGenuis', '')) == 'False':
+                is_genius = False
+
+            if user.count() <= 0:
+                return make_response(jsonify(error="User not found."), 404)
+            elif idea.count() > 0:
+                return make_response(jsonify(error="{0} idea already exists in the database for {1} {2}.".format(action[0].action, user[0].first_name, user[0].last_name)), 400)
+            else:
+                idea = Idea(
+                    response=str(request.json.get('idea', '')),
+                    random_word=str(request.json.get('random_word', '')),
+                    user_id=user[0].id,
+                    action_id=action[0].id,
+                    is_genius=is_genius,
+                    question=str(request.json.get('question', ''))
+                )
+                idea.save()
+
+                for category in categories:
+                    found_cat = Category.query.filter_by(name=category['name'])
+                    if found_cat.count() > 0:
+                        new_idea_categories = idea_categories.insert().values(idea_id=idea.id, category_id=found_cat[0].id)
+                        db.session.execute(new_idea_categories)
+                        db.session.commit()
+                    else:
+                        new_category = Category(name=category['name'], user_id=user[0].id)
+                        new_category.save()
+                        new_idea_categories = idea_categories.insert().values(idea_id=idea.id, category_id=new_category.id)
+                        db.session.execute(new_idea_categories)
+                        db.session.commit()
+
+                return make_response(jsonify(success="{0} idea for {1} {2} has been successfully created!".format(action[0].action, user[0].first_name, user[0].last_name)), 200)
+        else:
+            # add logic for deleting an idea here
+            return jsonify(message='This is a DELETE request')
+
+        return jsonify(message='Success')
 
     return app

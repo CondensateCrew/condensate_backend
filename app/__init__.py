@@ -117,7 +117,6 @@ def create_app(config_name):
                     "question": idea.question
                 }
                 brainstorms.append(bsObj)
-            # import code; code.interact(local=dict(globals(), **locals()))
             obj = {
                 "user": {
                     "id": user.id,
@@ -184,5 +183,16 @@ def create_app(config_name):
             random_words.append({ "word": word.word[:-1], "sentence": sentence })
 
         return jsonify(random_words)
+
+    @app.route('/login')
+    def login():
+        email = str(request.json.get('email', ''))
+        password_digest = str(request.json.get('password_digest', ''))
+
+        user = User.query.filter_by(email=email, password_digest=password_digest)
+        if user.count() > 0:
+            response = jsonify({ "token": user[0].token })
+            response.status_code = 303
+            return response
 
     return app

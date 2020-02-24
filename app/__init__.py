@@ -31,11 +31,11 @@ def create_app(config_name):
             first_name = str(request.json.get('first_name', ''))
             last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
-            password_digest = str(request.json.get('password_digest', ''))
+            password = str(request.json.get('password', ''))
             if User.query.filter_by(email=email).count() > 0:
                 abort(make_response(jsonify(message="A user with this email already exists."), 400))
-            elif first_name and last_name and email and password_digest:
-                user = User(first_name=first_name, last_name=last_name, email=email, password_digest=password_digest)
+            elif first_name and last_name and email and password:
+                user = User(first_name=first_name, last_name=last_name, email=email, password=password)
                 user.save()
                 response = jsonify({
                     'id': user.id,

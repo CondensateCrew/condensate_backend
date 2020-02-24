@@ -14,7 +14,7 @@ class DashboardTestCase(unittest.TestCase):
         with self.app.app_context():
             db.create_all()
 
-            user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password_digest="password")
+            user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password="password")
             user.save()
 
             cat1 = Category(name="Finance", user_id=user.id)

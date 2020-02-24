@@ -2,7 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from instance.config import app_config
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 from flask import request, jsonify, abort, make_response
@@ -33,11 +35,11 @@ def create_app(config_name):
             first_name = str(request.json.get('first_name', ''))
             last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
-            password_digest = str(request.json.get('password_digest', ''))
+            password = str(request.json.get('password', ''))
             if User.query.filter_by(email=email).count() > 0:
                 abort(make_response(jsonify(message="A user with this email already exists."), 400))
-            elif first_name and last_name and email and password_digest:
-                user = User(first_name=first_name, last_name=last_name, email=email, password_digest=password_digest)
+            elif first_name and last_name and email and password:
+                user = User(first_name=first_name, last_name=last_name, email=email, password=password)
                 user.save()
                 response = jsonify({
                     'id': user.id,
@@ -121,7 +123,6 @@ def create_app(config_name):
                     "question": idea.question
                 }
                 brainstorms.append(bsObj)
-            # import code; code.interact(local=dict(globals(), **locals()))
             obj = {
                 "user": {
                     "id": user.id,
@@ -189,6 +190,17 @@ def create_app(config_name):
 
         return jsonify(random_words)
 
+    @app.route('/login')
+    def login():
+        email = str(request.json.get('email', ''))
+        password = str(request.json.get('password', ''))
+
+        user = User.query.filter_by(email=email)[0]
+        if user and bcrypt.check_password_hash(user.password_digest, password):
+            response = jsonify({ "token": user.token })
+            response.status_code = 303
+            return response
+
     @app.route('/ideas', methods=['POST', 'DELETE'])
     def ideas():
         if request.method == "POST":
@@ -237,6 +249,5 @@ def create_app(config_name):
             return jsonify(message='This is a DELETE request')
 
         return jsonify(message='Success')
-
 
     return app

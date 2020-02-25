@@ -381,7 +381,7 @@ Reponse:
 
 ## Database Schema
 
-<!-- ![]() -->
+![](https://github.com/CondensateCrew/condensate_backend/blob/16-update-documentation/static/condensate_db_schema.png)
 
 ## Project Board
 

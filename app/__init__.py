@@ -207,7 +207,7 @@ def create_app(config_name):
 
         user = User.query.filter_by(email=email)[0]
         if user and bcrypt.check_password_hash(user.password_digest, password):
-            response = jsonify({ "token": user.token })
+            response = jsonify({ "token": user.token, "first_name": user.first_name, "last_name": user.last_name })
             response.status_code = 303
             return response
 

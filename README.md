@@ -69,9 +69,9 @@ POST /users
 Body:
 
 {
-  "first_name": "Keanu"
-  "last_name": "Reeves"
-  "email": "kreeves@example.com"
+  "first_name": "Keanu",
+  "last_name": "Reeves",
+  "email": "kreeves@example.com",
   "password": "supersecurepassword"
 }
 ```

@@ -34,7 +34,7 @@ For now, environment variables must be set manually for new sessions using the f
 export FLASK_APP="run.py"
 export APP_SETTINGS="development"
 export DATABASE_URL="postgresql://localhost/condensate_dev"
-export FLASK_ENV=development
+export FLASK_ENV='development'
 ```
 This will be automated in the future.
 

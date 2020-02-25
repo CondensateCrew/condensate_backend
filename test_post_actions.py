@@ -27,7 +27,7 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         self.assertEqual(data['action'], "Write a novel")
 
-        res2 = self.client().get('/dashboard', json={"token": user_token})
+        res2 = self.client().post('/dashboard', json={"token": user_token})
         data2 = json.loads(res2.get_data(as_text=True))
 
         self.assertEqual(data2['actions'][0]['action'], "Write a novel")

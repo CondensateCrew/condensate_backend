@@ -47,7 +47,7 @@ class DashboardTestCase(unittest.TestCase):
             user_token = User.query.filter_by(email='rhantak@example.com').first().token
 
     def test_dashboard_endpoint(self):
-        res = self.client().get('/dashboard', json={"token": user_token})
+        res = self.client().post('/dashboard', json={"token": user_token})
         data = json.loads(res.get_data(as_text=True))
 
         self.assertEqual(res.status_code, 200)

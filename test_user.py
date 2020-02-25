@@ -23,37 +23,6 @@ class UserTestCase(unittest.TestCase):
         self.assertIn('Hantak', str(res.data))
         self.assertIn('rhantak@example.com', str(res.data))
 
-    def test_api_can_get_all_users(self):
-        res = self.client().post('/users', json=self.user)
-        self.assertEqual(res.status_code, 201)
-        res = self.client().get('/users')
-
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('Ryan', str(res.data))
-        self.assertIn('Hantak', str(res.data))
-        self.assertIn('rhantak@example.com', str(res.data))
-
-
-    def test_api_can_get_user_by_id(self):
-        rv = self.client().post('/users', json=self.user)
-        self.assertEqual(rv.status_code, 201)
-        result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
-        result = self.client().get(
-            '/users/{}'.format(result_in_json['id']))
-        self.assertEqual(result.status_code, 200)
-        self.assertIn('Ryan', str(result.data))
-        self.assertIn('Hantak', str(result.data))
-        self.assertIn('rhantak@example.com', str(result.data))
-
-    def test_api_sends_error_for_missing_user(self):
-        rv = self.client().post('/users', json=self.user)
-        self.assertEqual(rv.status_code, 201)
-        result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
-        result = self.client().get(
-            '/users/99')
-        self.assertEqual(result.status_code, 404)
-        self.assertIn('User not found.', str(result.data))
-
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()

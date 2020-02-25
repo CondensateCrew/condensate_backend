@@ -25,7 +25,7 @@ def create_app(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
-    @app.route('/users', methods=['POST', 'GET'])
+    @app.route('/users', methods=['POST'])
     def users():
         if request.method == "POST":
             first_name = str(request.json.get('first_name', ''))
@@ -50,49 +50,6 @@ def create_app(config_name):
                 return response
             else:
                 abort(make_response(jsonify(message="Missing parameter."), 400))
-
-        else:
-            # GET
-            users = User.get_all()
-            results = []
-
-            for user in users:
-                obj = {
-                    'id': user.id,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'email': user.email,
-                    'date_created': user.date_created,
-                    'date_modified': user.date_modified
-                }
-                results.append(obj)
-            response = jsonify(results)
-            response.status_code = 200
-            return response
-
-    @app.route('/users/<int:user_id>')
-    def user(user_id):
-        users = User.query.filter_by(id=user_id)
-        results = []
-
-        for user in users:
-            obj = {
-                'id': user.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'date_created': user.date_created,
-                'date_modified': user.date_modified
-            }
-            results.append(obj)
-        response = jsonify(results)
-        if results == []:
-            response = jsonify({"error": "User not found."})
-            response.status_code = 404
-            return response
-        else:
-            response.status_code = 200
-            return response
 
     @app.route('/dashboard')
     def dashboard():

@@ -200,7 +200,7 @@ def create_app(config_name):
         else:
             return make_response(jsonify(error="User not found."), 404)
 
-    @app.route('/login')
+    @app.route('/login', methods=['POST'])
     def login():
         email = str(request.json.get('email', ''))
         password = str(request.json.get('password', ''))

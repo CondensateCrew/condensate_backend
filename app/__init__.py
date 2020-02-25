@@ -12,17 +12,13 @@ from sqlalchemy.sql.expression import func, select
 import requests
 import random
 import os
+from flask_cors import CORS
 
 def create_app(config_name):
-    from app.models import User
-    from app.models import Word
-    from app.models import Sentence
-    from app.models import Action
-    from app.models import Idea
-    from app.models import Category
-    from app.models import idea_categories
+    from app.models import User, Word, Sentence, Action, Idea, Category, idea_categories
 
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     app.config['JSON_SORT_KEYS'] = False
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')

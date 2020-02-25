@@ -276,4 +276,27 @@ def create_app(config_name):
                     return make_response('', 204)
 
 
+    @app.route('/actions', methods=['POST'])
+    def create_action():
+        token = str(request.json.get('token', ''))
+        action = str(request.json.get('action', ''))
+        user = User.query.filter_by(token=token)
+
+        if user.count() > 0:
+            if Action.query.filter_by(action=action).count() == 0:
+                action = Action(action=action, user_id=user[0].id)
+                action.save()
+                obj = {
+                    'id': action.id,
+                    'action': action.action,
+                    'user_id': action.user_id
+                }
+                response = jsonify(obj)
+                response.status_code = 201
+                return response
+            else:
+                abort(make_response(jsonify(message="You already have that action!"), 404))
+        else:
+            abort(make_response(jsonify(message="Invalid user token."), 404))
+
     return app

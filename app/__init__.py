@@ -176,9 +176,9 @@ def create_app(config_name):
             idea = Idea.query.filter_by(response=str(request.json.get('idea', '')))
             categories = request.json.get('categories', '')
 
-            if str(request.json.get('isGenuis', '')) == 'True':
+            if str(request.json.get('isGenius', '')) == 'True':
                 is_genius = True
-            if str(request.json.get('isGenuis', '')) == 'False':
+            if str(request.json.get('isGenius', '')) == 'False':
                 is_genius = False
 
             if user.count() <= 0:

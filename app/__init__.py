@@ -213,6 +213,9 @@ def create_app(config_name):
 
     @app.route('/ideas', methods=['POST', 'DELETE'])
     def ideas():
+        if not request.data:
+            return make_response(jsonify(error="Missing parameters."), 400)
+
         if request.method == "POST":
             token = str(request.json.get('id', ''))
             user = User.query.filter_by(token=token)
@@ -254,10 +257,23 @@ def create_app(config_name):
                         db.session.commit()
 
                 return make_response(jsonify(success="{0} idea for {1} {2} has been successfully created!".format(action[0].action, user[0].first_name, user[0].last_name)), 200)
-        else:
-            # add logic for deleting an idea here
-            return jsonify(message='This is a DELETE request')
 
-        return jsonify(message='Success')
+        if request.method == "DELETE":
+            token = str(request.json.get('token', ''))
+            user = User.query.filter_by(token=token)
+            idea_id = str(request.json.get('idea_id', ''))
+
+            if user.count() <= 0:
+                return make_response(jsonify(error="User not found."), 404)
+            else:
+                idea = Idea.query.filter_by(id=idea_id, user_id=user[0].id)
+
+                if idea.count() <= 0:
+                    return make_response(jsonify(error="Idea not found."), 404)
+                else:
+                    idea_name = idea[0].question
+                    Idea.delete(idea[0])
+                    return make_response('', 204)
+
 
     return app

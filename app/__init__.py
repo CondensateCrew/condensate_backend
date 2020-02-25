@@ -51,7 +51,7 @@ def create_app(config_name):
             else:
                 abort(make_response(jsonify(message="Missing parameter."), 400))
 
-    @app.route('/dashboard')
+    @app.route('/dashboard', methods=['POST'])
     def dashboard():
         token = str(request.json.get('token', ''))
         if User.query.filter_by(token=token).count() > 0:
@@ -104,7 +104,7 @@ def create_app(config_name):
 
         return jsonify({"Words Added":counter})
 
-    @app.route('/game_setup')
+    @app.route('/game_setup', methods=['POST'])
     def setup():
         def find_sentence(word):
             if len(word.sentence) < 3:

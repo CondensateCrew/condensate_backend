@@ -18,7 +18,7 @@ class UserTestCase(unittest.TestCase):
 
     def test_user_authentication(self):
         body = {"email": "rhantak@example.com","password": "password"}
-        res = self.client().get('/login', json=self.user)
+        res = self.client().post('/login', json=self.user)
         data = json.loads(res.get_data(as_text=True))
 
         self.assertEqual(res.status_code, 303)

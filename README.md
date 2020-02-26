@@ -232,27 +232,27 @@ Sample Successful Response (includes 64 words with sentences):
 Status: 200
 
 [
-    {
-        "word": "wife",
-        "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
-    },
-    {
-        "word": "map",
-        "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
-    },
-    {
-        "word": "movie",
-        "sentence": "A camcorder was used to film the movie."
-    },
-    {
-        "word": "insect",
-        "sentence": "Ant is a hard working insect."
-    },
-    {
-        "word": "bath",
-        "sentence": "How do you clean the bath with a piddling short shower hose "
-    },
-    ...
+  {
+      "word": "wife",
+      "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
+  },
+  {
+      "word": "map",
+      "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
+  },
+  {
+      "word": "movie",
+      "sentence": "A camcorder was used to film the movie."
+  },
+  {
+      "word": "insect",
+      "sentence": "Ant is a hard working insect."
+  },
+  {
+      "word": "bath",
+      "sentence": "How do you clean the bath with a piddling short shower hose "
+  },
+  ...
 ]
 ```
 
@@ -425,7 +425,7 @@ Reponse:
 
 ## Database Schema
 
-![]()
+![](https://github.com/CondensateCrew/condensate_backend/blob/58-update-documentation/static/condensate_db_schema.png)
 
 ## Project Board
 

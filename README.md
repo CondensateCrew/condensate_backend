@@ -1,3 +1,4 @@
+https://travis-ci.org/CondensateCrew/condensate_backend.svg?branch=master
 # Condensate Backend
 
 *Note: this is the backend service for Condensate, a different method of brainstorming. To learn more about Condensate, you can visit the frontend GitHub repo [here](https://github.com/CondensateCrew/Condensate).*

@@ -103,17 +103,33 @@ def create_app(config_name):
         else:
             abort(make_response(jsonify(message="Could not find a user with that token."), 404))
 
-    @app.route('/import_nouns')
+    @app.route('/seed')
     def nouns():
         file = open("nouns.txt", "r")
-        counter = 0
+        word_count = 0
         for line in file:
-            if Word.query.filter_by(word=line).count() == 0:
-                dbWord = Word(word=line)
+            if Word.query.filter_by(word=line.rstrip()).count() == 0:
+                dbWord = Word(word=line.rstrip())
                 dbWord.save()
-                counter += 1
+                word_count += 1
 
-        return jsonify({"Words Added":counter})
+        file = open("actions.txt", "r")
+        action_count = 0
+        for line in file:
+            if Action.query.filter_by(action=line.rstrip()).count() == 0:
+                dbAction = Action(action=line.rstrip())
+                dbAction.save()
+                action_count += 1
+
+        file = open("categories.txt", "r")
+        category_count = 0
+        for line in file:
+            if Category.query.filter_by(name=line.rstrip()).count() == 0:
+                dbCategory = Category(name=line.rstrip())
+                dbCategory.save()
+                category_count += 1
+
+        return jsonify({"Words Added":word_count, "Actions Added":action_count, "Categories Added": category_count})
 
     @app.route('/game_setup', methods=['POST'])
     def setup():

@@ -157,7 +157,7 @@ def create_app(config_name):
                 )
                 sentence.save()
 
-                return raw_sentence_response["example"][0]
+                return sentence.example
 
             else:
                 return random.choice(word.sentence)

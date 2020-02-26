@@ -8,11 +8,11 @@ This repo hosts the backend service for Condensate, which is a brainstorming app
 
 ## Tech Stack
 
-- Python (version) with pip (version)
-- Flask (version)
-- PostgreSQL (version)
-- SQLAlchemy (version)
-- Pytest (version)
+- Python (3.7.6) with pip (19.2.3)
+- Flask (1.1.1)
+- PostgreSQL (11.5)
+- SQLAlchemy (1.3.13)
+- Pytest (5.3.5)
 
 ## Getting started
 
@@ -158,8 +158,50 @@ Status: 200
       "email": "kreeves@example.com"
   },
   "brainstorms": [],
-  "actions": [],
-  "categories": []
+  "actions": [
+    {
+      "id": 1,
+      "action": "Create an App"
+    },
+    {
+      "id": 2,
+      "action": "Write a Story"
+    },
+    {
+      "id": 3,
+      "action": "Plan a Lesson"
+    },
+    {
+      "id": 4,
+      "action": "Make a Recipe"
+    },
+    {
+      "id": 5,
+      "action": "Write a Song"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Education"
+    },
+    {
+      "id": 2,
+      "name": "Technology"
+    },
+    {
+      "id": 3,
+      "name": "Environment"
+    },
+    {
+      "id": 4,
+      "name": "Food"
+    },
+    {
+      "id": 5,
+      "name": "Music"
+    }
+  ]
 }
 ```
 
@@ -190,27 +232,27 @@ Sample Successful Response (includes 64 words with sentences):
 Status: 200
 
 [
-    {
-        "word": "wife",
-        "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
-    },
-    {
-        "word": "map",
-        "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
-    },
-    {
-        "word": "movie",
-        "sentence": "A camcorder was used to film the movie."
-    },
-    {
-        "word": "insect",
-        "sentence": "Ant is a hard working insect."
-    },
-    {
-        "word": "bath",
-        "sentence": "How do you clean the bath with a piddling short shower hose "
-    },
-    ...
+  {
+    "word": "wife",
+    "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
+  },
+  {
+    "word": "map",
+    "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
+  },
+  {
+    "word": "movie",
+    "sentence": "A camcorder was used to film the movie."
+  },
+  {
+    "word": "insect",
+    "sentence": "Ant is a hard working insect."
+  },
+  {
+    "word": "bath",
+    "sentence": "How do you clean the bath with a piddling short shower hose "
+  },
+  ...
 ]
 ```
 
@@ -242,10 +284,10 @@ Body:
 {
 	"idea": "Test idea for Keanu Reeves",
 	"id": "c1e9a92195d98380747159598983bf96",
-	"action": "Write a magazine article",
-	"isGenuis": "False",
-	"question": "Write a piece about exercise habits",
-	"categories": [{"name": "Health"}, {"name": "Writing"}]
+	"action": "Create an App",
+	"isGenius": "False",
+	"question": "Create an app about learning to code",
+	"categories": [{"name": "Education"}, {"name": "Technology"}]
 }
 ```
 
@@ -254,7 +296,7 @@ Sample Successful Response:
 Status: 200
 
 {
-  "success": "Write a magazine article idea for Keanu Reeves has been successfully created!"
+  "success": "Create an app about learning to code idea for Keanu Reeves has been successfully created!"
 }
 ```
 
@@ -278,7 +320,9 @@ OR
 ```
 Status: 400
 
-"Write a magazine article idea already exists in the database for Keanu Reeves."
+{
+  "error": "Create an app about learning to code idea already exists in the database for Keanu Reeves."
+}
 ```
 
 #### Delete a user idea:
@@ -365,23 +409,25 @@ Status: 404
 }
 ```
 
-#### Import a list of random words to the database from `nouns.txt`:
+#### Seed database with random words and default actions and categories:
 
 Request:
 ```
-GET /import_nouns
+GET /seed
 ```
 
 Reponse:
 ```
 {
-  "Words Added": 417
+  "Words Added": 441,
+  "Actions Added": 5,
+  "Categories Added": 5
 }
 ```
 
 ## Database Schema
 
-![](https://github.com/CondensateCrew/condensate_backend/blob/16-update-documentation/static/condensate_db_schema.png)
+![](https://github.com/CondensateCrew/condensate_backend/blob/58-update-documentation/static/condensate_db_schema.png)
 
 ## Project Board
 
@@ -391,5 +437,5 @@ Reponse:
 
 ## Core Contributors (Backend Only)
 
-[Graham Thompson](https://github.com/grwthomps)
+[Graham Thompson](https://github.com/grwthomps)  
 [Ryan Hantak](https://github.com/rhantak)

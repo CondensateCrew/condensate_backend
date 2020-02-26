@@ -233,24 +233,24 @@ Status: 200
 
 [
   {
-      "word": "wife",
-      "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
+    "word": "wife",
+    "sentence": "Carol is the first wife of Danny, and the mother of Jamie."
   },
   {
-      "word": "map",
-      "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
+    "word": "map",
+    "sentence": "One centimeter on the map represents one kilometer of distance on the ground."
   },
   {
-      "word": "movie",
-      "sentence": "A camcorder was used to film the movie."
+    "word": "movie",
+    "sentence": "A camcorder was used to film the movie."
   },
   {
-      "word": "insect",
-      "sentence": "Ant is a hard working insect."
+    "word": "insect",
+    "sentence": "Ant is a hard working insect."
   },
   {
-      "word": "bath",
-      "sentence": "How do you clean the bath with a piddling short shower hose "
+    "word": "bath",
+    "sentence": "How do you clean the bath with a piddling short shower hose "
   },
   ...
 ]
@@ -320,7 +320,9 @@ OR
 ```
 Status: 400
 
-"Create an app about learning to code idea already exists in the database for Keanu Reeves."
+{
+  "error": "Create an app about learning to code idea already exists in the database for Keanu Reeves."
+}
 ```
 
 #### Delete a user idea:

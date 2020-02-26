@@ -34,6 +34,13 @@ class DashboardTestCase(unittest.TestCase):
             idea2 = Idea(user_id=user.id, random_word="Bird", action_id=action1.id, is_genius=False, question="Create an app people use to trade stocks", response="Make it easy to trade stocks mobile, charge a monthly fee so people don't feel like each trade costs them extra money and offer daily articles to encourage them to keep checking.")
             idea2.save()
 
+            user.categories.append(cat1)
+            user.categories.append(cat2)
+            user.categories.append(cat3)
+
+            user.actions.append(action1)
+            user.actions.append(action2)
+
             idea1.categories.append(cat1)
             idea1.categories.append(cat2)
 

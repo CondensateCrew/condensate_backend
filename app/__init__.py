@@ -15,7 +15,7 @@ import os
 from flask_cors import CORS
 
 def create_app(config_name):
-    from app.models import User, Word, Sentence, Action, Idea, Category, idea_categories
+    from app.models import User, Word, Sentence, Action, Idea, Category, idea_categories, user_actions
 
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
@@ -32,11 +32,22 @@ def create_app(config_name):
             last_name = str(request.json.get('last_name', ''))
             email = str(request.json.get('email', ''))
             password = str(request.json.get('password', ''))
+            actions = Action.query.all()
+            categories = Category.query.all()
+
             if User.query.filter_by(email=email).count() > 0:
                 abort(make_response(jsonify(message="A user with this email already exists."), 400))
             elif first_name and last_name and email and password:
                 user = User(first_name=first_name, last_name=last_name, email=email, password=password)
                 user.save()
+                for action in actions:
+                    user.actions.append(action)
+
+                for category in categories:
+                    user.categories.append(category)
+
+                user.save()
+
                 response = jsonify({
                     'id': user.id,
                     'first_name': user.first_name,
@@ -92,24 +103,40 @@ def create_app(config_name):
         else:
             abort(make_response(jsonify(message="Could not find a user with that token."), 404))
 
-    @app.route('/import_nouns')
+    @app.route('/seed')
     def nouns():
         file = open("nouns.txt", "r")
-        counter = 0
+        word_count = 0
         for line in file:
-            if Word.query.filter_by(word=line).count() == 0:
-                dbWord = Word(word=line)
+            if Word.query.filter_by(word=line.rstrip()).count() == 0:
+                dbWord = Word(word=line.rstrip())
                 dbWord.save()
-                counter += 1
+                word_count += 1
 
-        return jsonify({"Words Added":counter})
+        file = open("actions.txt", "r")
+        action_count = 0
+        for line in file:
+            if Action.query.filter_by(action=line.rstrip()).count() == 0:
+                dbAction = Action(action=line.rstrip())
+                dbAction.save()
+                action_count += 1
+
+        file = open("categories.txt", "r")
+        category_count = 0
+        for line in file:
+            if Category.query.filter_by(name=line.rstrip()).count() == 0:
+                dbCategory = Category(name=line.rstrip())
+                dbCategory.save()
+                category_count += 1
+
+        return jsonify({"Words Added":word_count, "Actions Added":action_count, "Categories Added": category_count})
 
     @app.route('/game_setup', methods=['POST'])
     def setup():
         def find_sentence(word):
             if len(word.sentence) < 3:
                 url = "https://twinword-word-graph-dictionary.p.rapidapi.com/example/"
-                querystring = {"entry":word.word[:-1]}
+                querystring = {"entry":word.word}
                 headers = {
                     'x-rapidapi-host': "twinword-word-graph-dictionary.p.rapidapi.com",
                     'x-rapidapi-key': os.getenv('RAPID_API_KEY')
@@ -147,7 +174,7 @@ def create_app(config_name):
 
             for word in words:
                 sentence = find_sentence(word)
-                random_words.append({ "word": word.word[:-1], "sentence": sentence })
+                random_words.append({ "word": word.word, "sentence": sentence })
 
             return jsonify(random_words)
         else:
@@ -237,13 +264,15 @@ def create_app(config_name):
 
         if user.count() > 0:
             if Action.query.filter_by(action=action).count() == 0:
-                action = Action(action=action, user_id=user[0].id)
+                action = Action(action=action)
                 action.save()
                 obj = {
                     'id': action.id,
                     'action': action.action,
-                    'user_id': action.user_id
                 }
+                new_user_action = user_actions.insert().values(user_id=user[0].id, action_id=action.id)
+                db.session.execute(new_user_action)
+                db.session.commit()
                 response = jsonify(obj)
                 response.status_code = 201
                 return response

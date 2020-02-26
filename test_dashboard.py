@@ -17,22 +17,29 @@ class DashboardTestCase(unittest.TestCase):
             user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password="password")
             user.save()
 
-            cat1 = Category(name="Finance", user_id=user.id)
+            cat1 = Category(name="Finance")
             cat1.save()
-            cat2 = Category(name="Education", user_id=user.id)
+            cat2 = Category(name="Education")
             cat2.save()
-            cat3 = Category(name="Tech", user_id=user.id)
+            cat3 = Category(name="Tech")
             cat3.save()
 
-            action1 = Action(action="Create an app", user_id=user.id)
+            action1 = Action(action="Create an app")
             action1.save()
-            action2 = Action(action="Draft an ad campaign", user_id=user.id)
+            action2 = Action(action="Draft an ad campaign")
             action2.save()
 
             idea1 = Idea(user_id=user.id, random_word="Skate", action_id=action2.id, is_genius=True, question="Create an ad campaign to sell a book about financial literacy.", response="Two friends in a roller derby match are having a conversation about how they're investing their money, one tells the other about what they learned from the book and the second person is so impressed they want to buy it.")
             idea1.save()
             idea2 = Idea(user_id=user.id, random_word="Bird", action_id=action1.id, is_genius=False, question="Create an app people use to trade stocks", response="Make it easy to trade stocks mobile, charge a monthly fee so people don't feel like each trade costs them extra money and offer daily articles to encourage them to keep checking.")
             idea2.save()
+
+            user.categories.append(cat1)
+            user.categories.append(cat2)
+            user.categories.append(cat3)
+
+            user.actions.append(action1)
+            user.actions.append(action2)
 
             idea1.categories.append(cat1)
             idea1.categories.append(cat2)

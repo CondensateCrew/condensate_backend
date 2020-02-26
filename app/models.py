@@ -1,6 +1,15 @@
 from app import db, bcrypt
 import secrets
 
+user_categories = db.Table('user_categories',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'), nullable=False, primary_key=True)
+)
+
+user_actions = db.Table('user_actions',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True),
+    db.Column('action_id', db.Integer, db.ForeignKey('actions.id'), nullable=False, primary_key=True)
+)
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -11,8 +20,10 @@ class User(db.Model):
     email = db.Column(db.String(255))
     password_digest = db.Column(db.String(255))
     token = db.Column(db.String(255))
-    categories = db.relationship('Category', backref='user', lazy=True)
-    actions = db.relationship('Action', backref='user', lazy=True)
+    categories = db.relationship('Category', secondary=user_categories, lazy='subquery',
+        backref=db.backref('users', lazy=True))
+    actions = db.relationship('Action', secondary=user_actions, lazy='subquery',
+        backref=db.backref('users', lazy=True))
     ideas = db.relationship('Idea', backref='user', lazy=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
@@ -44,15 +55,13 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
 
-    def __init__(self, name, user_id):
+    def __init__(self, name):
         self.name = name
-        self.user_id = user_id
 
     def save(self):
         db.session.add(self)
@@ -75,15 +84,13 @@ class Action(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     action = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
 
-    def __init__(self, action, user_id):
+    def __init__(self, action):
         self.action = action
-        self.user_id = user_id
 
     def save(self):
         db.session.add(self)
@@ -100,12 +107,10 @@ class Action(db.Model):
     def __repr__(self):
         return self.action
 
-
 idea_categories = db.Table('idea_categories',
     db.Column('idea_id', db.Integer, db.ForeignKey('ideas.id'), nullable=False, primary_key=True),
     db.Column('category_id', db.Integer, db.ForeignKey('categories.id'), nullable=False, primary_key=True)
 )
-
 
 class Idea(db.Model):
     __tablename__ = 'ideas'

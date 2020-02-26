@@ -264,7 +264,7 @@ def create_app(config_name):
 
         if user.count() > 0:
             if Action.query.filter_by(action=action).count() == 0:
-                action = Action(action=action, user_id=user[0].id)
+                action = Action(action=action)
                 action.save()
                 obj = {
                     'id': action.id,

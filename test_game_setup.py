@@ -3,12 +3,12 @@ import os
 import json
 from app import create_app, db
 
-class UserAuthTestCase(unittest.TestCase):
+class GameSetupTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.user = {'first_name': 'Ryan', 'last_name': 'Hantak', 'email': 'rhantak@example.com', 'password': 'password'}
         from app.models import User
+
 
         with self.app.app_context():
             db.create_all()
@@ -16,15 +16,25 @@ class UserAuthTestCase(unittest.TestCase):
             user = User(first_name="Ryan", last_name="Hantak", email="rhantak@example.com", password="password")
             user.save()
 
-    def test_user_authentication(self):
-        body = {"email": "rhantak@example.com","password": "password"}
-        res = self.client().post('/login', json=self.user)
+            global user_token
+            user_token = User.query.filter_by(email='rhantak@example.com').first().token
+
+    def test_game_setup_endpoint(self):
+        self.client().get('/seed')
+        res = self.client().post('/game_setup', json={"token": user_token})
         data = json.loads(res.get_data(as_text=True))
 
-        self.assertEqual(res.status_code, 303)
-        self.assertEqual(len(data['token']), 32)
+        self.assertEqual(res.status_code, 200)
+        assert 'word' in data[0]
+        assert 'sentence' in data[0]
+        assert 'sentence' in data[26]
+        assert 'sentence' in data[26]
 
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()
             db.drop_all()
+
+
+if __name__ == "__main__":
+    unittest.main()

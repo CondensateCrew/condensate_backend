@@ -225,16 +225,9 @@ def create_app(config_name):
 
                 for category in categories:
                     found_cat = Category.query.filter_by(name=category['name'])
-                    if found_cat.count() > 0:
-                        new_idea_categories = idea_categories.insert().values(idea_id=idea.id, category_id=found_cat[0].id)
-                        db.session.execute(new_idea_categories)
-                        db.session.commit()
-                    else:
-                        new_category = Category(name=category['name'], user_id=user[0].id)
-                        new_category.save()
-                        new_idea_categories = idea_categories.insert().values(idea_id=idea.id, category_id=new_category.id)
-                        db.session.execute(new_idea_categories)
-                        db.session.commit()
+                    new_idea_categories = idea_categories.insert().values(idea_id=idea.id, category_id=found_cat[0].id)
+                    db.session.execute(new_idea_categories)
+                    db.session.commit()
 
                 return make_response(jsonify(success="{0} idea for {1} {2} has been successfully created!".format(action[0].action, user[0].first_name, user[0].last_name)), 200)
 

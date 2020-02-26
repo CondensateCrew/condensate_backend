@@ -160,7 +160,7 @@ def create_app(config_name):
                 return sentence.example
 
             else:
-                return random.choice(word.sentence)
+                return random.choice(word.sentence).example
 
         if not request.data:
             return make_response(jsonify(error="Missing token."), 400)

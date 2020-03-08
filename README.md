@@ -1,6 +1,8 @@
 ![](https://travis-ci.org/CondensateCrew/condensate_backend.svg?branch=master)
 # Condensate Backend
 
+![](https://github.com/CondensateCrew/condensate_backend/blob/69-update-documentation/static/condensate_welcome_screenshot.png)
+
 *Note: this is the backend service for Condensate, a different method of brainstorming. To learn more about Condensate, you can visit the frontend GitHub repo [here](https://github.com/CondensateCrew/Condensate).*
 
 ## Introduction
